@@ -1,5 +1,5 @@
 {
-  "name": "shop-project",
+  "name": "node-shop-project",
   "version": "1.0.0",
   "description": "E-shop built with Node.js",
   "main": "app.js",
