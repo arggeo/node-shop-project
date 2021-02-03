@@ -18,8 +18,7 @@ exports.postAddProduct = (req, res, next) => {
       title: title,
       price: price,
       imageUrl: imageUrl,
-      description: description,
-      userId: req.user.id
+      description: description
    })
       .then(result => {
          res.status(302).redirect('/admin/products');

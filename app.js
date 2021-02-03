@@ -10,6 +10,8 @@ const sequelize = require('./util/database');
 // Models
 const Product = require('./models/product');
 const User = require('./models/user');
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
 
 // Routes
 const adminRoutes = require('./routes/admin');
@@ -43,9 +45,24 @@ app.use('/', errorController.get404);
 Product.belongsTo(User, {
    constraint: true,
    onDelete: 'CASCADE'
-});
+}); // arguments are optional
+// User.hasMany(Product, {
+//    constraint: true,
+//    onDelete: 'CASCADE'
+// });
 
+// A User owns many products (selling, -not bought)
 User.hasMany(Product);
+
+// A User has one Cart
+User.hasOne(Cart);
+Cart.belongsTo(User); // Optional - same effect as previous statement, one direction is enough
+
+// A Cart has many products
+Cart.belongsToMany(Product, { through: CartItem });
+
+// A Product can belong to many carts
+Product.belongsToMany(Cart, { through: CartItem });
 
 // sequelize.sync({ force: true })
 sequelize.sync()
@@ -60,9 +77,13 @@ sequelize.sync()
             email: 'test@test.com'
          })
       }
+      // returning a promise to be consistent with return values in any case however "return user" will suffice
       return Promise.resolve(user);
    })
    .then(user => {
+      return user.createCart();
+   })
+   .then(cart => {
       app.listen(3000);
    })
    .catch(err => {
