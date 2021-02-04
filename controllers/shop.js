@@ -1,6 +1,5 @@
 // Classes
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
    Product.findAll()
@@ -16,19 +15,6 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
    const prodID = req.params.productID;
-   // Product.findAll({
-   //    where: {
-   //       id: prodID
-   //    }
-   // })
-   // .then(product => {
-   //    res.render('shop/product-details', {
-   //       pageTitle: product.title,
-   //       path: '/products',
-   //       product: product[0]
-   //    });
-   // })
-   // .catch(err => console.log(err));
    Product.findByPk(prodID)
       .then(product => {
          res.render('shop/product-details', {
@@ -116,16 +102,40 @@ exports.postCartDeleteProduct = (req, res, next) => {
       .catch(err => console.log(err));
 }
 
-exports.getCheckout = (req, res, next) => {
-   res.render('shop/checkout', {
-      pageTitle: 'Checkout',
-      path: '/checkout'
-   });
+exports.postOrder = (req, res, next) => {
+   let fetchedCart;
+   req.user.getCart()
+      .then(cart => {
+         fetchedCart = cart;
+         return cart.getProducts();
+      })
+      .then(products => {
+         return req.user.createOrder()
+            .then(order => {
+               return order.addProducts(products.map(product => {
+                  product.orderItem = { quantity: product.cartItem.quantity }
+                  return product;
+               }));
+            })
+            .catch(err => console.log(err));
+      })
+      .then(result => {
+         return fetchedCart.setProducts(null);
+      })
+      .then(result => {
+         res.status(302).redirect('/orders');
+      })
+      .catch(err => console.log(err));
 }
 
 exports.getOrders = (req, res, next) => {
-   res.render('shop/orders', {
-      pageTitle: 'My Orders',
-      path: '/orders'
-   });
+   req.user.getOrders({ include: ['products'] })
+      .then(orders => {
+         res.render('shop/orders', {
+            pageTitle: 'My Orders',
+            path: '/orders',
+            orders: orders
+         });
+      })
+      .catch(err => console.log(err));
 }

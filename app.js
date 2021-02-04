@@ -12,6 +12,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 // Routes
 const adminRoutes = require('./routes/admin');
@@ -40,7 +42,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
-app.use('/', errorController.get404);
+app.use('/', errorController.get404); // '/' is optional
 
 Product.belongsTo(User, {
    constraint: true,
@@ -63,6 +65,18 @@ Cart.belongsToMany(Product, { through: CartItem });
 
 // A Product can belong to many carts
 Product.belongsToMany(Cart, { through: CartItem });
+
+// One order belongs to a single User
+Order.belongsTo(User);
+
+// A User owns many orders
+User.hasMany(Order);
+
+// Order has many products
+Order.belongsToMany(Product, { through: OrderItem });
+
+// A Product can belong to many orders
+Product.belongsToMany(Order, { through: OrderItem });
 
 // sequelize.sync({ force: true })
 sequelize.sync()
