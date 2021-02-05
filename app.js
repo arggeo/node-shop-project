@@ -14,6 +14,9 @@ const shopRoutes = require('./routes/shop');
 // Controllers
 const errorController = require('./controllers/error');
 
+// Models
+const User = require('./models/user');
+
 // Util
 
 // Templates
@@ -24,6 +27,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
+   User.findByID('601dcae60da2f928f7751f53')
+      .then(user => {
+         req.user = user;
+      })
+      .catch(err => console.log(err));
    next();
 });
 
