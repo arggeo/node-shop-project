@@ -30,7 +30,6 @@ exports.postLogin = (req, res, next) => {
                      console.log(err);
                      res.status(302).redirect('/');
                   }); // session.save() is not always needed - here, ensures that session has been saved before redirecting
-                  return res.status(302).redirect('/');
                }
                res.status(302).redirect('/login');
             })
