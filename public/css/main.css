@@ -42,8 +42,10 @@ form {
 
 .main-header-nav {
   height: 100%;
+  width: 100%;
   display: none;
   align-items: center;
+  justify-content: space-between;
 }
 
 .main-header-item-list {
@@ -58,14 +60,21 @@ form {
   padding: 0;
 }
 
-.main-header-item a {
+.main-header-item a,
+.main-header-item button {
+  font: inherit;
+  background: transparent;
+  border: none;
   text-decoration: none;
   color: white;
+  cursor: pointer;
 }
 
 .main-header-item a:hover,
 .main-header-item a:active,
-.main-header-item a.active {
+.main-header-item a.active,
+.main-header-item button:hover,
+.main-header-item button:active {
   color: #ffeb3b;
 }
 
@@ -100,16 +109,23 @@ form {
   padding: 0;
 }
 
-.mobile-nav-item a {
+.mobile-nav-item a,
+.mobile-nav-item button {
+  font: inherit;
   text-decoration: none;
   color: black;
   font-size: 1.5rem;
   padding: 0.5rem 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .mobile-nav-item a:active,
 .mobile-nav-item a:hover,
-.mobile-nav-item a.active {
+.mobile-nav-item a.active,
+.mobile-nav-item button:hover,
+.mobile-nav-item button:active {
   background: #00695c;
   color: white;
   border-radius: 3px;
