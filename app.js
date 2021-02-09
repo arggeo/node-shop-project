@@ -44,7 +44,7 @@ app.use(session({
 
 app.use((req, res, next) => {
    if (!req.session.user) {
-      next();
+      return next();
    }
    User.findById(req.session.user._id)
       .then(user => {
@@ -69,20 +69,7 @@ app.use(authRoutes);
 app.use('/', errorController.get404); // '/' is optional
 
 mongoose.connect(MONGODB_URI)
-.then(result => {
-   User.findOne()
-      .then(user => {
-         if (!user) {
-            const user = new User({
-               name: 'Argy',
-               email: 'argy@test.com',
-               cart: {
-                  items: []
-               }
-            });
-            user.save();
-         }
-      });
-   app.listen(3000);
-})
-   .catch(err => console.log(err));
+   .then(result => {
+      app.listen(3000);
+   })
+      .catch(err => console.log(err));
