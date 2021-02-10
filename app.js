@@ -16,6 +16,10 @@ const store = new MongoDBStore({
    collection: 'sessions'
 });
 
+// CSRF Protection
+const csrf = require('csurf');
+const csrfProtection = csrf();
+
 // Routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -26,6 +30,9 @@ const errorController = require('./controllers/error');
 
 // Models
 const User = require('./models/user');
+
+// Flash
+const flash = require('connect-flash');
 
 // Util
 
@@ -42,6 +49,10 @@ app.use(session({
    store: store
 }));
 
+app.use(csrfProtection);
+
+app.use(flash());
+
 app.use((req, res, next) => {
    if (!req.session.user) {
       return next();
@@ -52,16 +63,13 @@ app.use((req, res, next) => {
          next();
       })
       .catch(err => console.log(err));
-})
+});
 
-// app.use((req, res, next) => {
-//    User.findById('601fad3b2c244505ccdfe78a')
-//       .then(user => {
-//          req.user = user;
-//          next();
-//       })
-//       .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+   res.locals.isAuthenticated = req.session.isLoggedIn;
+   res.locals.csrfToken = req.csrfToken();
+   next();
+})
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
