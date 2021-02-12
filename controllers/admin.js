@@ -61,20 +61,23 @@ exports.postEditProduct = (req, res, next) => {
    const updatedDescription = req.body.description;
    Product.findById(prodID)
       .then(product => {
+         if (product.userId.toString() !== req.user._id.toString()) {
+            return res.status(302).redirect('/');
+         }
          product.title = updatedTitle;
          product.price = updatedPrice;
          product.description = updatedDescription;
          product.imageUrl = updatedImageUrl;
-         return product.save();
-      })
-      .then(result => {
-         res.status(302).redirect('/admin/products');
+         return product.save()
+            .then(result => {
+            res.status(302).redirect('/admin/products');
+         });
       })
       .catch(err => console.log(err));
 }
 
 exports.getProducts = (req, res, next) => {
-   Product.find()
+   Product.find({ userId: req.user._id })
       // .select('title price -_id')  // selects only specific fields to get fetched
       // .populate('userId', 'name')  // populates related fields (refs) | call .execPopulate() to get a promise
       .then(products => {
@@ -89,7 +92,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
    const prodID = req.body.productID;
-   Product.findByIdAndRemove(prodID)
+   Product.deleteOne({ _id: prodID, userId: req.user._id })
       .then(() => {
          res.status(302).redirect('/admin/products');
       })
