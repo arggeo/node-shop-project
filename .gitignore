@@ -2,4 +2,8 @@
 .idea
 data/*
 !data/.gitdirectory
+!data/invoices
 images/*
+!images/.gitdirectory
+data/invoices/*
+!data/invoices/.gitdirectory
