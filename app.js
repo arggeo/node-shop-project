@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const router = express.Router();
 
 // Database
@@ -19,6 +20,24 @@ const store = new MongoDBStore({
 // CSRF Protection
 const csrf = require('csurf');
 const csrfProtection = csrf();
+
+// Multer
+const fileStorage = multer.diskStorage({
+   destination: (req, file, cb) => {
+      cb(null, 'images');
+   },
+   filename: (req, file, cb) => {
+      cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
+   }
+});
+
+const fileFilter = (req, file, cb) => {
+   if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+      cb(null, true);
+   } else {
+      cb(null, false);
+   }
+}
 
 // Routes
 const adminRoutes = require('./routes/admin');
@@ -41,7 +60,10 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use(session({
    secret: 'mysecret',
    resave: false,
@@ -84,7 +106,11 @@ app.use('/', errorController.get404); // '/' is optional
 
 app.use((error, req, res, next) => {
    // res.status(error.httpStatusCode).render(...);
-   res.redirect('/500');
+   res.status(500).render('500', {
+      pageTitle: 'Error!',
+      path: '/500',
+      isAuthenticated: req.session.isLoggedIn
+   });
 });
 
 mongoose.connect(MONGODB_URI)
