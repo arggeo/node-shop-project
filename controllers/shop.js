@@ -10,7 +10,7 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
 // Stripe
-const stripe = require('stripe')('xxxxxxxxx');
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 const ITEMS_PER_PAGE = 2;
 

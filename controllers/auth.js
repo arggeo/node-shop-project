@@ -13,7 +13,7 @@ const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 const transporter = nodemailer.createTransport(sendgridTransport({
    auth: {
-    api_key: 'xxxxxxxxx'
+    api_key: `${process.env.SENDGRID_KEY}`
    }
 }));
 
@@ -165,7 +165,7 @@ exports.postSignup = (req, res, next) => {
          res.status(302).redirect('/login');
          return transporter.sendMail({
             to: email,
-            from: 'xxxxxxxxx@gmail.com',
+            from: `${process.env.SENDER_EMAIL}`,
             subject: 'Signup Succeeded',
             html: '<h1>You successfully signed up</h1>'
          })
@@ -212,7 +212,7 @@ exports.postReset = (req, res, next) => {
             res.status(302).redirect('/');
             transporter.sendMail({
                to: req.body.email,
-               from: 'xxxxxxxxx@gmail.com',
+               from: `${process.env.SENDER_EMAIL}`,
                subject: 'Password reset',
                html: `
                   <p>You requested a password reset.</p>

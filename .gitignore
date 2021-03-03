@@ -7,3 +7,4 @@ images/*
 !images/.gitdirectory
 data/invoices/*
 !data/invoices/.gitdirectory
+nodemon.json
