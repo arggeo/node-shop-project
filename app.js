@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const router = express.Router();
+const helmet = require('helmet');
 
 // Database
 const mongoose = require('mongoose');
@@ -58,6 +59,8 @@ const flash = require('connect-flash');
 // Templates
 app.set('view engine', 'ejs');
 app.set('views', 'views');
+
+app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
